@@ -11,3 +11,23 @@ accounts:
 validators:
   - name: alice
     bonded: 50000000000000usky # 50 Million SKY staked to secure the PoS network
+
+genesis:
+  app_state:
+    staking:
+      params:
+        bond_denom: usky
+        key_rotation_fee:
+          denom: usky
+          amount: "1"
+    mint:
+      params:
+        mint_denom: usky
+    gov:
+      params:
+        min_deposit:
+          - denom: usky
+            amount: "10000000"
+        expedited_min_deposit:
+          - denom: usky
+            amount: "50000000"
