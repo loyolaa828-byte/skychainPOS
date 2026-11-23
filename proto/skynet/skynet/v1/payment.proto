@@ -1,0 +1,15 @@
+syntax = "proto3";
+package skynet.skynet.v1;
+
+option go_package = "skynet/x/skynet/types";
+
+// Payment defines the Payment message.
+message Payment {
+  uint64 id = 1;
+  string merchant = 2;
+  string payer = 3;
+  uint64 amount = 4;
+  string denom = 5;
+  string memo = 6;
+  int64 timestamp = 7;
+}

@@ -8,6 +8,16 @@ import (
 
 func RegisterInterfaces(registrar codectypes.InterfaceRegistry) {
 	registrar.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgPayMerchant{},
+	)
+
+	registrar.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgCreateMerchant{},
+		&MsgUpdateMerchant{},
+		&MsgDeleteMerchant{},
+	)
+
+	registrar.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgUpdateParams{},
 	)
 	msgservice.RegisterMsgServiceDesc(registrar, &_Msg_serviceDesc)

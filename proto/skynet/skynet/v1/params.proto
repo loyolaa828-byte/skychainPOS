@@ -10,5 +10,4 @@ option go_package = "skynet/x/skynet/types";
 message Params {
   option (amino.name) = "skynet/x/skynet/Params";
   option (gogoproto.equal) = true;
-  
 }

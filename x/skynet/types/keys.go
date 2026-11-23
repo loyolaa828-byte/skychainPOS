@@ -17,3 +17,8 @@ const (
 
 // ParamsKey is the prefix to retrieve all Params
 var ParamsKey = collections.NewPrefix("p_skynet")
+
+var (
+	PaymentKey      = collections.NewPrefix("payment/value/")
+	PaymentCountKey = collections.NewPrefix("payment/count/")
+)

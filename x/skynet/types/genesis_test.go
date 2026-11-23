@@ -21,8 +21,44 @@ func TestGenesisState_Validate(t *testing.T) {
 		},
 		{
 			desc:     "valid genesis state",
-			genState: &types.GenesisState{},
-			valid:    true,
+			genState: &types.GenesisState{MerchantMap: []types.Merchant{{Index: "0"}, {Index: "1"}}, PaymentList: []types.Payment{{Id: 0}, {Id: 1}}, PaymentCount: 2}, valid: true,
+		}, {
+			desc: "duplicated merchant",
+			genState: &types.GenesisState{
+				MerchantMap: []types.Merchant{
+					{
+						Index: "0",
+					},
+					{
+						Index: "0",
+					},
+				},
+				PaymentList: []types.Payment{{Id: 0}, {Id: 1}}, PaymentCount: 2,
+			}, valid: false,
+		}, {
+			desc: "duplicated payment",
+			genState: &types.GenesisState{
+				PaymentList: []types.Payment{
+					{
+						Id: 0,
+					},
+					{
+						Id: 0,
+					},
+				},
+			},
+			valid: false,
+		}, {
+			desc: "invalid payment count",
+			genState: &types.GenesisState{
+				PaymentList: []types.Payment{
+					{
+						Id: 1,
+					},
+				},
+				PaymentCount: 0,
+			},
+			valid: false,
 		},
 	}
 	for _, tc := range tests {

@@ -1,11 +1,14 @@
 syntax = "proto3";
+
 package skynet.skynet.v1;
 
 import "amino/amino.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
-import "cosmos/base/query/v1beta1/pagination.proto";
+import "skynet/skynet/v1/merchant.proto";
 import "skynet/skynet/v1/params.proto";
+import "skynet/skynet/v1/payment.proto";
 
 option go_package = "skynet/x/skynet/types";
 
@@ -15,8 +18,27 @@ service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/skynet/skynet/v1/params";
   }
-}
 
+  // ListMerchant Queries a list of Merchant items.
+  rpc GetMerchant(QueryGetMerchantRequest) returns (QueryGetMerchantResponse) {
+    option (google.api.http).get = "/skynet/skynet/v1/merchant/{index}";
+  }
+
+  // ListMerchant defines the ListMerchant RPC.
+  rpc ListMerchant(QueryAllMerchantRequest) returns (QueryAllMerchantResponse) {
+    option (google.api.http).get = "/skynet/skynet/v1/merchant";
+  }
+
+  // ListPayment Queries a list of Payment items.
+  rpc GetPayment(QueryGetPaymentRequest) returns (QueryGetPaymentResponse) {
+    option (google.api.http).get = "/skynet/skynet/v1/payment/{id}";
+  }
+
+  // ListPayment defines the ListPayment RPC.
+  rpc ListPayment(QueryAllPaymentRequest) returns (QueryAllPaymentResponse) {
+    option (google.api.http).get = "/skynet/skynet/v1/payment";
+  }
+}
 // QueryParamsRequest is request type for the Query/Params RPC method.
 message QueryParamsRequest {}
 
@@ -27,4 +49,46 @@ message QueryParamsResponse {
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
+}
+
+// QueryGetMerchantRequest defines the QueryGetMerchantRequest message.
+message QueryGetMerchantRequest {
+  string index = 1;
+}
+
+// QueryGetMerchantResponse defines the QueryGetMerchantResponse message.
+message QueryGetMerchantResponse {
+  Merchant merchant = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryAllMerchantRequest defines the QueryAllMerchantRequest message.
+message QueryAllMerchantRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryAllMerchantResponse defines the QueryAllMerchantResponse message.
+message QueryAllMerchantResponse {
+  repeated Merchant merchant = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryGetPaymentRequest defines the QueryGetPaymentRequest message.
+message QueryGetPaymentRequest {
+  uint64 id = 1;
+}
+
+// QueryGetPaymentResponse defines the QueryGetPaymentResponse message.
+message QueryGetPaymentResponse {
+  Payment payment = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryAllPaymentRequest defines the QueryAllPaymentRequest message.
+message QueryAllPaymentRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryAllPaymentResponse defines the QueryAllPaymentResponse message.
+message QueryAllPaymentResponse {
+  repeated Payment payment = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }

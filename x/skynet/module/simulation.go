@@ -1,9 +1,13 @@
 package skynet
 
 import (
+	"math/rand"
+
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	"github.com/cosmos/cosmos-sdk/x/simulation"
 
+	skynetsimulation "skynet/x/skynet/simulation"
 	"skynet/x/skynet/types"
 )
 
@@ -25,6 +29,22 @@ func (am AppModule) RegisterStoreDecoder(_ simtypes.StoreDecoderRegistry) {}
 // WeightedOperations returns the all the gov module operations with their respective weights.
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
+	const (
+		opWeightMsgPayMerchant          = "op_weight_msg_skynet"
+		defaultWeightMsgPayMerchant int = 100
+	)
+
+	var weightMsgPayMerchant int
+	simState.AppParams.GetOrGenerate(opWeightMsgPayMerchant, &weightMsgPayMerchant, nil,
+		func(_ *rand.Rand) {
+			weightMsgPayMerchant = defaultWeightMsgPayMerchant
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgPayMerchant,
+		skynetsimulation.SimulateMsgPayMerchant(am.authKeeper, am.bankKeeper, am.keeper, simState.TxConfig),
+	))
+
 	return operations
 }
 

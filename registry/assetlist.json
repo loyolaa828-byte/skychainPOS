@@ -1,0 +1,24 @@
+{
+  "$schema": "../assetlist.schema.json",
+  "chain_name": "skynet",
+  "assets": [
+    {
+      "description": "The native staking, governance, and Point-of-Sale settlement token of SkychainPOS.",
+      "denom_units": [
+        {
+          "denom": "usky",
+          "exponent": 0
+        },
+        {
+          "denom": "sky",
+          "exponent": 6
+        }
+      ],
+      "base": "usky",
+      "name": "SkychainPOS",
+      "display": "sky",
+      "symbol": "SKY",
+      "type_asset": "sdk.coin"
+    }
+  ]
+}

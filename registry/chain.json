@@ -1,0 +1,34 @@
+{
+  "$schema": "../chain.schema.json",
+  "chain_name": "skynet",
+  "status": "live",
+  "network_type": "mainnet",
+  "pretty_name": "SkychainPOS",
+  "chain_type": "cosmos",
+  "chain_id": "skynet",
+  "bech32_prefix": "sky",
+  "daemon_name": "skynetd",
+  "node_home": "$HOME/.skynet",
+  "key_algos": [
+    "secp256k1"
+  ],
+  "slip44": 118,
+  "fees": {
+    "fee_tokens": [
+      {
+        "denom": "usky",
+        "fixed_min_gas_price": 0.0025,
+        "low_gas_price": 0.01,
+        "average_gas_price": 0.025,
+        "high_gas_price": 0.04
+      }
+    ]
+  },
+  "staking": {
+    "staking_tokens": [
+      {
+        "denom": "usky"
+      }
+    ]
+  }
+}

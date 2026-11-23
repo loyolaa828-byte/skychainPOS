@@ -14,6 +14,18 @@ validators:
 
 genesis:
   app_state:
+    bank:
+      denom_metadata:
+        - description: "The native staking, governance, and Point-of-Sale settlement token of SkychainPOS."
+          denom_units:
+            - denom: usky
+              exponent: 0
+            - denom: sky
+              exponent: 6
+          base: usky
+          display: sky
+          name: SkychainPOS
+          symbol: SKY
     staking:
       params:
         bond_denom: usky
