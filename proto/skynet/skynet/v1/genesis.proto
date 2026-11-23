@@ -1,0 +1,17 @@
+syntax = "proto3";
+package skynet.skynet.v1;
+
+import "amino/amino.proto";
+import "gogoproto/gogo.proto";
+import "skynet/skynet/v1/params.proto";
+
+option go_package = "skynet/x/skynet/types";
+
+// GenesisState defines the skynet module's genesis state.
+message GenesisState {
+  // params defines all the parameters of the module.
+  Params params = 1 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
