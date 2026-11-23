@@ -1,27 +1,13 @@
 version: 1
 validation: sovereign
 default_denom: stake
-accounts: 
-- name: alice
-  coins:
-  - 20000token
-  - 200000000stake
-- name: bob
-  coins:
-  - 10000token
-  - 100000000stake
-client:
-  openapi:
-    path: docs/static/openapi.json
-faucet:
-  name: bob
-  coins:
-  - 5token
-  - 100000stake
+accounts:
+  - name: alice
+    coins:
+      - 100000000000000usky   # 100 Million SKY initial supply
+  - name: bob
+    coins:
+      - 5000000000000usky     # 5 Million SKY
 validators:
-- name: alice
-  bonded: 100000000stake
-- name: validator1
-  bonded: 200000000stake
-- name: validator2
-  bonded: 100000000stake
+  - name: alice
+    bonded: 50000000000000usky # 50 Million SKY staked to secure the PoS network
