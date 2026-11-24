@@ -1,0 +1,19 @@
+{
+  "$schema": "../assetlist.schema.json",
+  "chain_name": "skynet",
+  "assets": [
+    {
+      "description": "The native staking, gas, and POS settlement token of Skynet Chain.",
+      "denom_units": [
+        { "denom": "usky", "exponent": 0 },
+        { "denom": "sky", "exponent": 6 }
+      ],
+      "base": "usky",
+      "name": "Skynet",
+      "display": "sky",
+      "symbol": "SKY",
+      "coingecko_id": "skynet-pos",
+      "traces": []
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "name": "skynet-evm",
+  "version": "1.0.0",
+  "scripts": {
+    "node": "npx hardhat node --port 8545",
+    "compile": "npx hardhat compile",
+    "deploy": "npx hardhat run scripts/deploy.js --network localhost"
+  },
+  "devDependencies": {
+    "ethers": "^6.13.0",
+    "hardhat": "^2.22.15",
+    "@nomicfoundation/hardhat-ethers": "^3.0.6"
+  }
+}

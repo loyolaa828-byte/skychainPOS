@@ -1,0 +1,18 @@
+{
+  "type": "cosmos",
+  "value": {
+    "key": "relayer-osmo",
+    "chain-id": "osmo-test-5",
+    "rpc-addr": "https://rpc.testnet.osmosis.zone:443",
+    "account-prefix": "osmo",
+    "keyring-backend": "test",
+    "gas-adjustment": 1.5,
+    "gas-prices": "0.025uosmo",
+    "min-gas-amount": 1,
+    "debug": true,
+    "timeout": "15s",
+    "output-format": "json",
+    "sign-mode": "direct",
+    "coin-type": 118
+  }
+}

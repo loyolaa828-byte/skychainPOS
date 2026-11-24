@@ -1,0 +1,40 @@
+{
+  "$schema": "../chain.schema.json",
+  "chain_name": "skynet",
+  "status": "live",
+  "network_type": "mainnet",
+  "pretty_name": "Skynet POS Chain",
+  "chain_type": "cosmos",
+  "chain_id": "skynet",
+  "bech32_prefix": "sky",
+  "daemon_name": "skynetd",
+  "node_home": "$HOME/.skynet",
+  "key_algos": ["secp256k1"],
+  "slip44": 118,
+  "fees": {
+    "fee_tokens": [
+      {
+        "denom": "usky",
+        "fixed_min_gas_price": 0.0025,
+        "low_gas_price": 0.005,
+        "average_gas_price": 0.025,
+        "high_gas_price": 0.04
+      }
+    ]
+  },
+  "staking": {
+    "staking_tokens": [{ "denom": "usky" }]
+  },
+  "codebase": {
+    "git_repo": "https://github.com/loyolaa828-byte/skychainPOS",
+    "recommended_version": "v1.0.0",
+    "compatible_versions": ["v1.0.0"],
+    "sdk": { "type": "cosmos", "version": "v0.53.0" },
+    "ibc": { "type": "go", "version": "v11.0.0" }
+  },
+  "apis": {
+    "rpc": [{ "address": "http://localhost:26657", "provider": "Skynet Local" }],
+    "rest": [{ "address": "http://localhost:1317", "provider": "Skynet Local" }],
+    "grpc": [{ "address": "localhost:9090", "provider": "Skynet Local" }]
+  }
+}

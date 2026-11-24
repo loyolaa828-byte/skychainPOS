@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SkynetScan — SKY EVM Block Explorer & Market</title>
+  <script src="/ethers.js"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #0b0f19; color: #e2e8f0; margin: 0; padding: 24px; }
+    .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e293b; padding-bottom: 16px; flex-wrap: wrap; gap: 12px; }
+    .badge { background: #10b98120; color: #34d399; padding: 6px 12px; border-radius: 999px; font-size: 13px; border: 1px solid #10b98140; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin: 24px 0; }
+    .card { background: #111827; border: 1px solid #1f2937; border-radius: 12px; padding: 16px; }
+    .label { color: #94a3b8; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .val { font-size: 22px; font-weight: 700; margin-top: 6px; color: #f8fafc; }
+    .panels { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    input { width: 100%; box-sizing: border-box; background: #0b0f19; border: 1px solid #334155; color: #f8fafc; padding: 10px; border-radius: 8px; margin: 8px 0 12px; }
+    table { width: 100%; border-collapse: collapse; background: #111827; border-radius: 12px; overflow: hidden; margin-top: 12px; }
+    th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #1f2937; font-size: 13px; }
+    th { background: #1e293b; color: #94a3b8; }
+    code { color: #38bdf8; font-family: monospace; }
+    button { background: #3b82f6; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+    button:hover { background: #2563eb; }
+    .btn-secondary { background: #1e293b; border: 1px solid #334155; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      <h1 style="margin:0">⚡ SkynetScan Explorer</h1>
+      <p style="margin:4px 0 0;color:#94a3b8">EVM Mainnet/Testnet Explorer • Chain ID: 8888 • Pure Market-Driven SKY</p>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span class="badge" id="status">Connecting...</span>
+      <button class="btn-secondary" id="walletBtn" onclick="connectWallet()">Connect MetaMask</button>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card"><div class="label">Pure Market SKY Price</div><div class="val" id="price">$--</div></div>
+    <div class="card"><div class="label">Latest Block</div><div class="val" id="block">#--</div></div>
+    <div class="card"><div class="label">Total Staked Supply</div><div class="val" id="staked">-- SKY</div></div>
+    <div class="card"><div class="label">Total SKY Burned (dEaD)</div><div class="val" id="burned">-- SKY</div></div>
+    <div class="card"><div class="label">AMM Pool Liquidity</div><div class="val" id="liquidity">--</div></div>
+  </div>
+
+  <div class="panels">
+    <div class="card">
+      <h3 style="margin-top:0">Swap USDC &rarr; SKY (Live AMM)</h3>
+      <div class="label">Amount in USDC</div>
+      <input id="swapAmount" type="number" placeholder="e.g. 10" min="0.01" step="any" />
+      <button onclick="executeSwap()">Swap via MetaMask</button>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">Stake WSKY (Supply Lock)</h3>
+      <div class="label">Amount in WSKY</div>
+      <input id="stakeAmount" type="number" placeholder="e.g. 5" min="0.01" step="any" />
+      <button onclick="executeStake()">Stake via MetaMask</button>
+    </div>
+  </div>
+
+  <h3>Verified System Contracts</h3>
+  <table>
+    <tr><th>Contract</th><th>Address</th><th>Role</th></tr>
+    <tr><td>WSKY (Wrapped SKY)</td><td><code id="addr-wsky">--</code></td><td>18-decimal ERC-20 Native Gas Wrapper</td></tr>
+    <tr><td>SkyUSD (USDC)</td><td><code id="addr-usdc">--</code></td><td>6-decimal Bridged Stablecoin</td></tr>
+    <tr><td>SkySwap AMM DEX</td><td><code id="addr-dex">--</code></td><td>Constant-Product Pool + 0.1% Burn</td></tr>
+    <tr><td>SkyStakingVault</td><td><code id="addr-vault">--</code></td><td>Community Staking Lockup</td></tr>
+  </table>
+
+  <h3 style="margin-top:28px">Recent Blocks & Transactions</h3>
+  <table>
+    <thead><tr><th>Block</th><th>Hash</th><th>Tx Count</th><th>Gas Used</th><th>Timestamp</th></tr></thead>
+    <tbody id="blocks-body"></tbody>
+  </table>
+
+  <script>
+    const readProvider = new ethers.JsonRpcProvider(window.location.origin + "/rpc");
+    let addrs, dex, vault, signer = null;
+
+    async function init() {
+      addrs = await (await fetch("/contracts.json")).json();
+      document.getElementById("addr-wsky").textContent = addrs.wsky;
+      document.getElementById("addr-usdc").textContent = addrs.usdc;
+      document.getElementById("addr-dex").textContent = addrs.dex;
+      document.getElementById("addr-vault").textContent = addrs.vault;
+
+      dex = new ethers.Contract(addrs.dex, [
+        "function getSkyPriceUSDC() view returns (uint256)",
+        "function totalBurnedSKY() view returns (uint256)",
+        "function reserveSKY() view returns (uint256)",
+        "function reserveUSDC() view returns (uint256)",
+        "function swapUSDCForSKY(uint256 usdcIn) returns (uint256)"
+      ], readProvider);
+
+      vault = new ethers.Contract(addrs.vault, [
+        "function totalStaked() view returns (uint256)",
+        "function stake(uint256 amount)"
+      ], readProvider);
+
+      refresh();
+      setInterval(refresh, 3000);
+    }
+
+    async function connectWallet() {
+      if (!window.ethereum) return alert("Install MetaMask extension to connect your wallet!");
+      const browserProvider = new ethers.BrowserProvider(window.ethereum);
+      await browserProvider.send("eth_requestAccounts", []);
+      signer = await browserProvider.getSigner();
+      const addr = await signer.getAddress();
+      document.getElementById("walletBtn").textContent = addr.slice(0, 6) + "..." + addr.slice(-4);
+    }
+
+    async function executeSwap() {
+      if (!signer) await connectWallet();
+      const val = document.getElementById("swapAmount").value;
+      if (!val || Number(val) <= 0) return alert("Enter a valid USDC amount");
+      const usdcIn = ethers.parseUnits(val, 6);
+      const usdc = new ethers.Contract(addrs.usdc, ["function approve(address,uint256) returns (bool)"], signer);
+      await (await usdc.approve(addrs.dex, usdcIn)).wait();
+      await (await dex.connect(signer).swapUSDCForSKY(usdcIn)).wait();
+      refresh();
+    }
+
+    async function executeStake() {
+      if (!signer) await connectWallet();
+      const val = document.getElementById("stakeAmount").value;
+      if (!val || Number(val) <= 0) return alert("Enter a valid WSKY amount");
+
+const skyIn = ethers.parseEther(val);
+const wsky = new ethers.Contract(addrs.wsky, ["function approve(address,uint256) returns (bool)"], signer);
+await (await wsky.approve(addrs.vault, skyIn)).wait();
+await (await vault.connect(signer).stake(skyIn)).wait();
+refresh();
+}
+async function refresh() {
+try {
+const blockNum = await readProvider.getBlockNumber();
+const [price, burned, resSky, resUsdc, staked] = await Promise.all([
+dex.getSkyPriceUSDC(), dex.totalBurnedSKY(), dex.reserveSKY(), dex.reserveUSDC(), vault.totalStaked()
+]);
+document.getElementById("status").textContent = "● Live Chain 8888";
+document.getElementById("block").textContent = "#" + blockNum;
+document.getElementById("price").textContent = "$" + (Number(price) / 1e6).toFixed(4);
+document.getElementById("staked").textContent = Number(ethers.formatEther(staked)).toFixed(2) + " SKY";
+document.getElementById("burned").textContent = Number(ethers.formatEther(burned)).toFixed(4) + " SKY";
+document.getElementById("liquidity").textContent = Number(ethers.formatEther(resSky)).toFixed(1) + " SKY / " + (Number(resUsdc)/1e6).toFixed(0) + " USDC";
+const tbody = document.getElementById("blocks-body");
+tbody.innerHTML = "";
+for (let i = blockNum; i >= Math.max(0, blockNum - 8); i--) {
+const b = await readProvider.getBlock(i);
+if (!b) continue;
+tbody.innerHTML += `
+#${b.number}
+${b.hash.slice(0, 18)}...
+${b.transactions.length}
+${b.gasUsed.toString()}
+${new Date(b.timestamp * 1000).toLocaleTimeString()}
+`;
+}
+} catch (e) {
+document.getElementById("status").textContent = "RPC Offline";
+}
+}
+init();
+
+
+

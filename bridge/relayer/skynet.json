@@ -1,0 +1,18 @@
+{
+  "type": "cosmos",
+  "value": {
+    "key": "relayer-sky",
+    "chain-id": "skynet",
+    "rpc-addr": "http://127.0.0.1:26657",
+    "account-prefix": "sky",
+    "keyring-backend": "test",
+    "gas-adjustment": 1.3,
+    "gas-prices": "0.025usky",
+    "min-gas-amount": 1,
+    "debug": true,
+    "timeout": "10s",
+    "output-format": "json",
+    "sign-mode": "direct",
+    "coin-type": 118
+  }
+}
